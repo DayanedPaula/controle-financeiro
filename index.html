@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Controle Financeiro</title>
+<style>
+:root{color-scheme:light;--ink:#292238;--muted:#766b87;--line:#e7def2;--accent:#8b5cf6;--bg:#f8f4fc;--green:#147d55;--lilac:#b794f6;--lilac-soft:#f0e7ff}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+main{max-width:850px;margin:0 auto;padding:24px 14px 40px}h1{margin:0 0 5px;font-size:1.7rem}.sub{color:var(--muted);margin:0 0 20px}
+.top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}.top label{font-weight:650}.top select{font:inherit;padding:10px;border:1px solid var(--line);border-radius:10px;background:white;color:var(--ink)}
+.summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:16px}.tile,.panel{background:white;border:1px solid var(--line);border-radius:15px}.tabs{display:flex;gap:8px;margin:0 0 16px;padding:6px;background:#eee5fa;border-radius:13px}.tab-btn{flex:1;background:transparent;color:#6c568d}.tab-btn.active{background:#fff;color:#6d28d9;box-shadow:0 2px 8px #4c1d9514}.tab-pane[hidden]{display:none}.balance-card{padding:16px}.balance-card label{display:block;font-size:.88rem;color:var(--muted);margin-bottom:6px}.balance-card input{width:100%;border:1px solid #d8c8ed;border-radius:10px;padding:12px;font:inherit;color:var(--ink);background:#fff}.balance-result{margin-top:14px;padding:16px;border-radius:12px;background:var(--lilac-soft)}.balance-result small{color:#6c568d;display:block}.balance-result strong{font-size:1.55rem;display:block;margin-top:4px}.balance-result .negative{color:#b42342}.balance-result .positive{color:#6d28d9}.tile{padding:15px}.tile small{display:block;color:var(--muted);margin-bottom:5px}.amount{font-size:1.35rem;font-weight:750;font-variant-numeric:tabular-nums}
+.panel{overflow:hidden;margin-bottom:14px}.head{padding:15px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.head h2{margin:0;font-size:1.05rem}.collapse-toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;background:transparent;color:var(--ink);padding:0;text-align:left}.collapse-toggle .arrow{transition:transform .2s ease}.collapse-toggle[aria-expanded="true"] .arrow{transform:rotate(180deg)}.collapsed-content[hidden]{display:none}.list{padding:0 16px}.item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);align-items:center}.item:last-child{border-bottom:0}.name{font-weight:650}.details{font-size:.85rem;color:var(--muted);margin-top:3px}.right{text-align:right}.price{font-weight:700;white-space:nowrap}.paid{display:flex;align-items:center;justify-content:flex-end;gap:6px;color:var(--muted);font-size:.83rem;margin-top:5px}input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent)}
+button{border:0;border-radius:9px;padding:10px 12px;font:inherit;font-weight:650;cursor:pointer}.primary{background:var(--accent);color:white}.secondary{background:#eef0f6;color:var(--ink)}.danger{background:#fff0f0;color:#9b2424}.actions{display:flex;gap:8px;flex-wrap:wrap}.edit-actions{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap;margin-top:7px}.edit-actions button{font-size:.78rem;padding:6px 8px}
+.form{padding:15px;display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:10px}.form label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:4px}.form input,.form select{width:100%;min-width:0;border:1px solid #d8dce6;border-radius:9px;padding:10px;font:inherit;background:white;color:var(--ink)}.form button{grid-column:1/-1}.form .wide{grid-column:1/-1}.recurring{display:flex;align-items:center;gap:8px;font-size:.9rem;color:var(--ink)}.recurring input{width:18px;height:18px}
+.note{color:var(--muted);font-size:.82rem;margin:12px 2px}.empty{padding:20px 0;color:var(--muted)}
+@media(min-width:600px){.summary{grid-template-columns:repeat(4,minmax(0,1fr))}.amount{font-size:1.25rem}}@media(max-width:480px){main{padding:20px 11px 32px}.form{grid-template-columns:1fr 1fr}.form .wide{grid-column:1/-1}}
+</style></head>
+<body><main>
+<h1>Controle financeiro</h1><p class="sub">Contas mensais, recorrências e parcelas em um só lugar.</p>
+<div class="top"><label for="month">Mês de referência:</label><select id="month"></select><div class="actions"><button class="secondary" id="backup">Exportar backup</button><button class="secondary" id="importBtn">Importar backup</button><input type="file" id="importFile" accept=".json,application/json" hidden></div></div>
+<div class="tabs" role="tablist" aria-label="Seções do controle">
+<button class="tab-btn active" id="tabAccounts" role="tab" aria-selected="true">Contas</button>
+<button class="tab-btn" id="tabMoney" role="tab" aria-selected="false">Meu dinheiro</button>
+<button class="tab-btn" id="tabBalance" role="tab" aria-selected="false">Resumo</button>
+<button class="tab-btn" id="tabMariana" role="tab" aria-selected="false">Mariana — saldo devedor</button>
+</div>
+<div id="accountsPane" class="tab-pane">
+<section class="summary">
+<div class="tile"><small>Total do mês</small><div class="amount" id="total">R$ 0,00</div></div>
+<div class="tile"><small>Em aberto</small><div class="amount" id="open">R$ 0,00</div></div>
+<div class="tile"><small>Já pago</small><div class="amount" id="paid">R$ 0,00</div></div>
+<div class="tile"><small>Contas pendentes</small><div class="amount" id="count">0</div></div>
+</section>
+<section class="panel"><div class="head"><div style="width:100%"><button class="collapse-toggle" id="toggleBills" aria-expanded="false" aria-controls="billsContent"><span><strong id="monthTitle">Contas do mês</strong><span id="billCountLabel" class="details" style="display:block">Toque para ver todas as contas</span></span><span class="arrow" aria-hidden="true">⌄</span></button></div><button class="secondary" id="addMonth">Adicionar mês futuro</button></div><div id="billsContent" class="collapsed-content" hidden><div class="list" id="list"></div></div></section>
+<section class="panel"><div class="head"><h2>Adicionar conta</h2></div>
+<div class="form">
+<div class="wide"><label for="billName">Nome da conta</label><input id="billName" placeholder="Ex.: Internet"></div>
+<div><label for="billValue">Valor (R$)</label><input id="billValue" inputmode="decimal" placeholder="0,00"></div>
+<div><label for="billMonth">Começa em</label><select id="billMonth"></select></div>
+<div class="wide" style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+  <div><label for="billInstallments">Quantidade de parcelas</label><input id="billInstallments" inputmode="numeric" type="number" min="1" step="1" placeholder="Ex.: 6"></div>
+  <div><label for="billEnd">Termina em</label><select id="billEnd"></select></div>
+</div>
+<div class="wide"><label for="billDetails">Descrição</label><input id="billDetails" placeholder="Ex.: tênis Mariana, perfume..."></div>
+<div class="wide"><label class="recurring"><input type="checkbox" id="billRecurring"> Conta recorrente (criar nos meses futuros)</label><p class="details">Informe a quantidade de parcelas (quando houver), o mês em que começa e o mês em que termina. A descrição identifica a conta, como “Tênis Mariana”. Para conta avulsa, deixe início e término no mesmo mês.</p></div>
+<button class="primary" id="addBill">Adicionar conta</button>
+</div></section>
+<section class="panel"><div class="head"><h2>Como funciona</h2></div><div class="list"><p class="details">Contas recorrentes são criadas mês a mês até o mês final escolhido. Para parcelas, cadastre cada parcela no mês correto e informe o número da parcela nos detalhes. Marcar como paga vale apenas para aquele mês.</p><p class="details">O controle fica salvo neste navegador. Exporte o backup regularmente para preservar ou transferir os dados entre dispositivos.</p></div></section>
+</div>
+<div id="moneyPane" class="tab-pane" hidden>
+<section class="panel">
+  <div class="head"><h2>Dinheiro disponível no mês</h2></div>
+  <div class="list" id="moneyList"></div>
+  <div class="form">
+    <div class="wide"><label for="moneyName">Descrição do dinheiro</label><input id="moneyName" placeholder="Ex.: Salário, comissão, camisão"></div>
+    <div><label for="moneyValue">Valor (R$)</label><input id="moneyValue" inputmode="decimal" placeholder="0,00"></div>
+    <div><label for="moneyMonth">Mês</label><select id="moneyMonth"></select></div>
+    <button class="primary" id="addMoney">Adicionar valor</button>
+  </div>
+</section>
+<section class="summary">
+  <div class="tile"><small>Total de entradas</small><div class="amount" id="moneyTotal">R$ 0,00</div></div>
+  <div class="tile"><small>Total de contas</small><div class="amount" id="moneyBills">R$ 0,00</div></div>
+  <div class="tile"><small>Saldo final</small><div class="amount" id="moneyRemainder">R$ 0,00</div></div>
+  <div class="tile"><small>Situação</small><div class="amount" id="moneyStatus">—</div></div>
+</section>
+</div>
+<div id="balancePane" class="tab-pane" hidden>
+<section class="panel"><div class="head"><h2>Planejamento do dinheiro</h2></div>
+<div class="balance-card">
+<label for="availableAmount">Quanto você terá disponível neste mês (R$)</label>
+<input id="availableAmount" inputmode="decimal" placeholder="Ex.: 3500,00">
+<p class="details">Informe o total que espera receber ou ter disponível. O cálculo usa as contas cadastradas para o mês selecionado na aba Contas.</p>
+<div class="balance-result"><small id="balanceCaption">Saldo após descontar as contas</small><strong id="balanceResult">R$ 0,00</strong><span id="balanceMessage" class="details">Informe um valor para calcular.</span></div>
+</div></section>
+</div>
+<div id="marianaPane" class="tab-pane" hidden>
+<section class="panel">
+  <div class="head"><h2>Mariana — saldo devedor</h2></div>
+  <div class="balance-card">
+    <label for="marianaInitialDebt">Saldo devedor inicial (R$)</label>
+    <input id="marianaInitialDebt" inputmode="decimal" value="25306,88" aria-label="Saldo devedor inicial da Mariana">
+    <p class="details">Ao marcar a conta “Mariana” como paga na aba Contas, o valor pago será descontado deste saldo. Cada mês pago é contabilizado uma única vez.</p>
+    <div class="balance-result">
+      <small>Total pago registrado</small><strong id="marianaPaidTotal">R$ 0,00</strong>
+      <small style="margin-top:12px">Saldo devedor restante</small><strong id="marianaRemaining">R$ 25.306,88</strong>
+      <span class="details" id="marianaPaymentsCount">0 pagamentos registrados</span>
+    </div>
+  </div>
+  <div class="head"><h2>Histórico de pagamentos</h2></div><div class="list" id="marianaHistory"></div>
+</section>
+</div>
+</main>
+<script>
+const key="controle-financeiro-v2";
+const now=new Date();const currentYM=now.getFullYear()+"-"+String(now.getMonth()+1).padStart(2,"0");
+const fmtMoney=n=>Number(n||0).toLocaleString("pt-BR",{style:"currency",currency:"BRL"});
+const ymAdd=(ym,n)=>{let [y,m]=ym.split("-").map(Number);let d=new Date(y,m-1+n,1);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")};
+const ymLabel=ym=>{let [y,m]=ym.split("-").map(Number);return new Date(y,m-1,1).toLocaleDateString("pt-BR",{month:"long",year:"numeric"}).replace(/^./,c=>c.toUpperCase())};
+let data;
+try{data=JSON.parse(localStorage.getItem(key)||"null")}catch(e){data=null}
+if(!data||!Array.isArray(data.bills)){
+ data={bills:[
+ {id:1,name:"Nei — relógio",value:400,details:"",start:"2026-11",end:"2026-11",recurring:false,paidMonths:[]},
+ {id:2,name:"Mariana",value:400,details:"",start:"2026-11",end:"2027-10",recurring:true,paidMonths:[]},
+ {id:3,name:"Tênis Mariana",value:100,details:"Parcela 1/8",start:"2026-11",end:"2026-11",recurring:false,paidMonths:[]},
+ {id:4,name:"Raquel — perfume",value:200,details:"Parcela 1/2",start:"2026-11",end:"2026-11",recurring:false,paidMonths:[]},
+ {id:5,name:"Álbum de formatura",value:327,details:"Parcela 5/6",start:"2026-11",end:"2026-11",recurring:false,paidMonths:[]},
+ {id:6,name:"Pós",value:79,details:"",start:"2026-11",end:"2027-10",recurring:true,paidMonths:[]},
+ {id:7,name:"MEI",value:30,details:"",start:"2026-11",end:"2027-10",recurring:true,paidMonths:[]},
+ {id:8,name:"Negociação Estácio",value:62,details:"",start:"2026-11",end:"2027-10",recurring:true,paidMonths:[]}
+ ],months:["2026-11"]};
+}
+data.money=Array.isArray(data.money)?data.money:[];
+function save(){try{localStorage.setItem(key,JSON.stringify(data))}catch(e){}}
+function monthList(){let set=new Set(data.months||[]);data.bills.forEach(b=>{let end=b.recurring?b.end:b.start;for(let m=b.start;m<=end;m=ymAdd(m,1))set.add(m)});set.add(currentYM);for(let i=1;i<=12;i++)set.add(ymAdd(currentYM,i));return [...set].sort()}
+function populate(sel,months,selected){sel.innerHTML="";months.forEach(m=>{let o=document.createElement("option");o.value=m;o.textContent=ymLabel(m);sel.append(o)});sel.value=months.includes(selected)?selected:months[0]}
+const monthSel=document.getElementById("month");populate(monthSel,monthList(),"2026-11");
+function billsForMonth(m){return data.bills.filter(b=>m>=b.start&&m<=(b.recurring?b.end:b.start))}
+let billsExpanded=false;
+const toggleBills=document.getElementById("toggleBills");
+if(toggleBills)toggleBills.addEventListener("click",()=>{billsExpanded=!billsExpanded;document.getElementById("billsContent").hidden=!billsExpanded;toggleBills.setAttribute("aria-expanded",String(billsExpanded));document.getElementById("billCountLabel").textContent=billsExpanded?"Toque para recolher as contas":"Toque para ver todas as contas"});
+function render(){
+ const m=monthSel.value;
+ document.getElementById("monthTitle").textContent="Contas de "+ymLabel(m).toLowerCase();
+ const list=document.getElementById("list");list.innerHTML="";
+ const bills=billsForMonth(m);
+ document.getElementById("billCountLabel").textContent=billsExpanded?(bills.length+" contas · toque para recolher"):(bills.length+" contas · toque para ver todas");
+ if(!bills.length){const empty=document.createElement("div");empty.className="empty";empty.textContent="Nenhuma conta cadastrada para este mês.";list.append(empty)}
+ bills.forEach(b=>{
+  const item=document.createElement("div");item.className="item";
+  const left=document.createElement("div"),name=document.createElement("div"),details=document.createElement("div");
+  name.className="name";name.textContent=b.name;details.className="details";details.textContent=[b.details,b.recurring?"Recorrente":"Avulsa"].filter(Boolean).join(" · ");left.append(name,details);
+  const right=document.createElement("div");right.className="right";
+  const price=document.createElement("div");price.className="price";price.textContent=fmtMoney(b.value);
+  const paid=document.createElement("label");paid.className="paid";const cb=document.createElement("input");cb.type="checkbox";cb.checked=(b.paidMonths||[]).includes(m);
+  cb.addEventListener("change",()=>{b.paidMonths=b.paidMonths||[];b.paidMonths=cb.checked?[...new Set([...b.paidMonths,m])]:b.paidMonths.filter(x=>x!==m);save();render()});
+  paid.append(cb,document.createTextNode(cb.checked?"Paga neste mês":"Pendente"));right.append(price,paid);
+  if(b.recurring){const small=document.createElement("div");small.className="details";small.textContent="Até "+ymLabel(b.end);right.append(small)}
+  const actions=document.createElement("div");actions.className="edit-actions";
+  const edit=document.createElement("button");edit.className="secondary";edit.textContent="Editar";edit.addEventListener("click",()=>editBill(b.id));
+  const del=document.createElement("button");del.className="danger";del.textContent="Excluir";del.addEventListener("click",()=>deleteBill(b.id));
+  actions.append(edit,del);right.append(actions);item.append(left,right);list.append(item);
+ });
+ const total=bills.reduce((s,b)=>s+Number(b.value||0),0),paidTotal=bills.filter(b=>(b.paidMonths||[]).includes(m)).reduce((s,b)=>s+Number(b.value||0),0);
+ document.getElementById("total").textContent=fmtMoney(total);document.getElementById("paid").textContent=fmtMoney(paidTotal);document.getElementById("open").textContent=fmtMoney(total-paidTotal);document.getElementById("count").textContent=bills.filter(b=>!(b.paidMonths||[]).includes(m)).length;
+ populate(document.getElementById("billMonth"),monthList(),m);
+ const ends=monthList().filter(x=>x>=document.getElementById("billMonth").value);
+ populate(document.getElementById("billEnd"),ends,ends.includes(ymAdd(m,11))?ymAdd(m,11):ends[ends.length-1]);
+ updateBalance();
+}
+function monthMoney(){return data.money.filter(x=>x.month===monthSel.value)}
+function renderMoney(){
+ const m=monthSel.value;const list=document.getElementById("moneyList");list.innerHTML="";
+ const entries=monthMoney();
+ if(!entries.length){const empty=document.createElement("div");empty.className="empty";empty.textContent="Nenhum valor cadastrado para este mês.";list.append(empty)}
+ entries.forEach(entry=>{
+  const item=document.createElement("div");item.className="item";
+  const left=document.createElement("div"),name=document.createElement("div"),details=document.createElement("div");
+  name.className="name";name.textContent=entry.name;details.className="details";details.textContent="Entrada de dinheiro";left.append(name,details);
+  const right=document.createElement("div");right.className="right";const price=document.createElement("div");price.className="price";price.textContent=fmtMoney(entry.value);
+  const actions=document.createElement("div");actions.className="edit-actions";
+  const edit=document.createElement("button");edit.className="secondary";edit.textContent="Editar";edit.addEventListener("click",()=>editMoney(entry.id));
+  const del=document.createElement("button");del.className="danger";del.textContent="Excluir";del.addEventListener("click",()=>{if(confirm('Excluir "'+entry.name+'" deste mês?')){data.money=data.money.filter(x=>x.id!==entry.id);save();renderMoney();updateMoneySummary()}});
+  actions.append(edit,del);right.append(price,actions);item.append(left,right);list.append(item);
+ });
+ const total=entries.reduce((s,x)=>s+Number(x.value||0),0);
+ const bills=billsForMonth(m).reduce((s,x)=>s+Number(x.value||0),0);
+ const remainder=total-bills;
+ document.getElementById("moneyTotal").textContent=fmtMoney(total);
+ document.getElementById("moneyBills").textContent=fmtMoney(bills);
+ document.getElementById("moneyRemainder").textContent=(remainder<0?"−":"")+fmtMoney(Math.abs(remainder));
+ document.getElementById("moneyStatus").textContent=remainder<0?"Falta":"Sobra";
+ populate(document.getElementById("moneyMonth"),monthList(),m);
+}
+function updateMoneySummary(){renderMoney();updateBalance()}
+function editMoney(id){
+ const e=data.money.find(x=>x.id===id);if(!e)return;
+ const name=prompt("Descrição:",e.name);if(name===null)return;
+ const raw=prompt("Valor em reais:",String(e.value).replace(".",","));if(raw===null)return;
+ const value=Number(raw.trim().replace(/\./g,"").replace(",","."));
+ if(!name.trim()||!Number.isFinite(value)||value<0){alert("Descrição ou valor inválido.");return}
+ e.name=name.trim();e.value=value;save();renderMoney();
+}
+document.getElementById("addMoney").addEventListener("click",()=>{
+ const name=document.getElementById("moneyName").value.trim();
+ const raw=document.getElementById("moneyValue").value.trim().replace(/\./g,"").replace(",",".");
+ const value=Number(raw);const month=document.getElementById("moneyMonth").value;
+ if(!name||raw===""||!Number.isFinite(value)||value<0){alert("Informe uma descrição e um valor válido.");return}
+ data.money.push({id:Date.now(),name,value,month});save();
+ document.getElementById("moneyName").value="";document.getElementById("moneyValue").value="";
+ renderMoney();
+});
+document.getElementById("moneyMonth").addEventListener("change",()=>{monthSel.value=document.getElementById("moneyMonth").value;render();renderMoney()});
+const marianaInitialInput=document.getElementById("marianaInitialDebt");
+function parseMarianaAmount(raw){if(!raw||!raw.trim())return 0;const n=Number(raw.trim().replace(/\./g,"").replace(",","."));return Number.isFinite(n)&&n>=0?n:0}
+function renderMarianaDebt(){
+ const initial=parseMarianaAmount(marianaInitialInput.value);
+ const account=data.bills.find(b=>b.name.trim().toLowerCase()==="mariana");
+ const months=account?(account.paidMonths||[]).slice().sort():[];
+ const amount=account?Number(account.value)||400:400;
+ const totalPaid=months.length*amount;
+ document.getElementById("marianaPaidTotal").textContent=fmtMoney(totalPaid);
+ document.getElementById("marianaRemaining").textContent=fmtMoney(Math.max(0,initial-totalPaid));
+ document.getElementById("marianaPaymentsCount").textContent=months.length+" pagamento(s) de "+fmtMoney(amount);
+ const history=document.getElementById("marianaHistory");history.innerHTML="";
+ if(!months.length){const empty=document.createElement("div");empty.className="empty";empty.textContent="Nenhum pagamento registrado. Marque Mariana como paga na aba Contas para abater R$ 400,00 do saldo.";history.append(empty)}
+ months.forEach(month=>{const row=document.createElement("div");row.className="item";const left=document.createElement("div"),name=document.createElement("div"),detail=document.createElement("div"),right=document.createElement("div"),price=document.createElement("div");name.className="name";name.textContent=ymLabel(month);detail.className="details";detail.textContent="Pagamento confirmado";left.append(name,detail);right.className="right";price.className="price";price.textContent="− "+fmtMoney(amount);right.append(price);row.append(left,right);history.append(row)});
+}
+marianaInitialInput.addEventListener("input",renderMarianaDebt);
+marianaInitialInput.addEventListener("change",renderMarianaDebt);
+const amountInput=document.getElementById("availableAmount");
+function parseAmount(raw){if(!raw||!raw.trim())return null;let n=Number(raw.trim().replace(/\\./g,"").replace(",", "."));return Number.isFinite(n)&&n>=0?n:null}
+function updateBalance(){
+ const amount=parseAmount(amountInput.value);const m=monthSel.value;const total=billsForMonth(m).reduce((s,b)=>s+Number(b.value||0),0);
+ const result=document.getElementById("balanceResult"),caption=document.getElementById("balanceCaption"),message=document.getElementById("balanceMessage");
+ if(amount===null){result.textContent=fmtMoney(0);result.className="";caption.textContent="Saldo após descontar as contas";message.textContent="Informe um valor para calcular.";return}
+ const balance=amount-total;result.textContent=fmtMoney(Math.abs(balance));result.className=balance<0?"negative":"positive";
+ if(balance<0){caption.textContent="Valor que faltará";message.textContent="Faltam "+fmtMoney(Math.abs(balance))+" para cobrir todas as contas deste mês."}
+ else{caption.textContent="Valor que sobrará";message.textContent=balance===0?"O valor disponível cobre exatamente as contas.":"Depois de pagar as contas, sobrarão "+fmtMoney(balance)+"."}
+}
+amountInput.addEventListener("input",updateBalance);
+function showTab(which){
+ const panes={accounts:"accountsPane",money:"moneyPane",balance:"balancePane",mariana:"marianaPane"};
+ const tabs={accounts:"tabAccounts",money:"tabMoney",balance:"tabBalance",mariana:"tabMariana"};
+ Object.keys(panes).forEach(k=>{
+  document.getElementById(panes[k]).hidden=k!==which;
+  document.getElementById(tabs[k]).classList.toggle("active",k===which);
+  document.getElementById(tabs[k]).setAttribute("aria-selected",String(k===which));
+ });
+ if(which==="money")renderMoney();
+ if(which==="balance")updateBalance();
+ if(which==="mariana")renderMarianaDebt();
+}
+document.getElementById("tabAccounts").addEventListener("click",()=>showTab("accounts"));
+document.getElementById("tabMoney").addEventListener("click",()=>showTab("money"));
+document.getElementById("tabBalance").addEventListener("click",()=>showTab("balance"));
+document.getElementById("tabMariana").addEventListener("click",()=>showTab("mariana"));
+monthSel.addEventListener("change",()=>{render();renderMoney()});
+document.getElementById("billMonth").addEventListener("change",()=>{
+ const start=document.getElementById("billMonth").value;
+ const validMonths=monthList().filter(x=>x>=start);
+ const currentEnd=document.getElementById("billEnd").value;
+ populate(document.getElementById("billEnd"),validMonths,currentEnd>=start?currentEnd:start);
+});
+document.getElementById("billEnd").addEventListener("change",()=>{
+ const start=document.getElementById("billMonth").value;
+ document.getElementById("billRecurring").checked=document.getElementById("billEnd").value>start;
+});
+document.getElementById("billRecurring").addEventListener("change",()=>{
+ if(!document.getElementById("billRecurring").checked){
+   document.getElementById("billEnd").value=document.getElementById("billMonth").value;
+ }
+});
+function editBill(id){
+ const b=data.bills.find(x=>x.id===id);if(!b)return;
+ const name=prompt("Nome da conta:",b.name);if(name===null)return;
+ const valueRaw=prompt("Valor em reais:",String(b.value).replace(".",","));if(valueRaw===null)return;
+ const value=Number(valueRaw.trim().replace(/\\./g,"").replace(",","."));
+ const details=prompt("Descrição / parcela (ex.: Parcela 3/6):",b.details||"");if(details===null)return;
+ const recurring=confirm("Esta conta deve continuar recorrente nos meses futuros?\nOK = recorrente | Cancelar = conta avulsa");
+ let end=b.start;
+ if(recurring){const suggested=b.end||ymAdd(b.start,11);const input=prompt("Repetir até (AAAA-MM):",suggested);if(input===null)return;if(!/^\\d{4}-\\d{2}$/.test(input)||input<b.start||Number(input.slice(5))<1||Number(input.slice(5))>12){alert("Mês inválido. Use o formato AAAA-MM, por exemplo 2027-10.");return;}end=input;}
+ if(!name.trim()||!Number.isFinite(value)||value<0){alert("Nome ou valor inválido. Nenhuma alteração foi salva.");return;}
+ b.name=name.trim();b.value=value;b.details=details.trim();b.recurring=recurring;b.end=end;
+ save();render();renderMoney();renderMarianaDebt();
+}
+function deleteBill(id){
+ const b=data.bills.find(x=>x.id===id);if(!b)return;
+ if(!confirm('Excluir "'+b.name+'" do controle? Esta ação remove a conta de todos os meses em que ela aparece.'))return;
+ data.bills=data.bills.filter(x=>x.id!==id);save();render();renderMoney();renderMarianaDebt();
+}
+document.getElementById("addBill").addEventListener("click",()=>{
+ let name=document.getElementById("billName").value.trim(),raw=document.getElementById("billValue").value.trim().replace(/\./g,"").replace(",", "."),value=Number(raw),start=document.getElementById("billMonth").value,details=document.getElementById("billDetails").value.trim(),installmentsRaw=document.getElementById("billInstallments").value.trim(),installments=installmentsRaw?Number(installmentsRaw):null,recurring=document.getElementById("billRecurring").checked,end=document.getElementById("billEnd").value;
+ if(!name||raw===""||!Number.isFinite(value)||value<0){alert("Informe o nome e um valor válido.");return}
+ if(installmentsRaw && (!Number.isInteger(installments)||installments<1)){alert("Informe uma quantidade de parcelas válida.");return}
+ if(end<start){alert("O mês final precisa ser igual ou posterior ao início.");return}
+ if(!recurring)end=start;
+ const displayDetails=[installments?("Parcelamento "+installments+"x"): "",details].filter(Boolean).join(" · ");
+ data.bills.push({id:Date.now(),name,value,details:displayDetails,start,end,recurring,installments,paidMonths:[]});data.months=[...new Set([...(data.months||[]),start,end])];save();populate(monthSel,monthList(),start);render();["billName","billValue","billDetails","billInstallments"].forEach(id=>document.getElementById(id).value="");document.getElementById("billRecurring").checked=false;
+});
+document.getElementById("addMonth").addEventListener("click",()=>{let m=ymAdd(monthSel.value,1);data.months=[...new Set([...(data.months||[]),m])];save();populate(monthSel,monthList(),m);render()});
+document.getElementById("backup").addEventListener("click",()=>{let blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download="backup-controle-financeiro.json";a.click();URL.revokeObjectURL(url)});
+document.getElementById("importBtn").addEventListener("click",()=>document.getElementById("importFile").click());
+document.getElementById("importFile").addEventListener("change",async e=>{let f=e.target.files[0];if(!f)return;try{let raw=await f.text();let imported=JSON.parse(raw);if(!Array.isArray(imported.bills))throw Error("Formato inválido");imported.money=Array.isArray(imported.money)?imported.money:[];imported.months=Array.isArray(imported.months)?imported.months:[];imported.bills=imported.bills.map(b=>({...b,paidMonths:Array.isArray(b.paidMonths)?b.paidMonths:[]}));data=imported;save();populate(monthSel,monthList(),currentYM);render();renderMoney();alert("Backup importado com sucesso.")}catch(err){alert("Não foi possível importar esse arquivo. Verifique se é um backup JSON válido.")}e.target.value=""});
+save();render();renderMoney();renderMarianaDebt();
+</script></body></html>
