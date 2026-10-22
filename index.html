@@ -5,15 +5,28 @@
 <title>Controle Financeiro</title>
 <style>
 :root{color-scheme:light;--ink:#292238;--muted:#766b87;--line:#e7def2;--accent:#8b5cf6;--bg:#f8f4fc;--green:#147d55;--lilac:#b794f6;--lilac-soft:#f0e7ff}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+*{box-sizing:border-box;min-width:0}html,body{max-width:100%;overflow-x:hidden}body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 main{max-width:850px;margin:0 auto;padding:24px 14px 40px}h1{margin:0 0 5px;font-size:1.7rem}.sub{color:var(--muted);margin:0 0 20px}
 .top{display:flex;gap:10px;align-items:center;flex-wrap:wrap;margin-bottom:16px}.top label{font-weight:650}.top select{font:inherit;padding:10px;border:1px solid var(--line);border-radius:10px;background:white;color:var(--ink)}
-.summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:16px}.tile,.panel{background:white;border:1px solid var(--line);border-radius:15px}.tabs{display:flex;gap:8px;margin:0 0 16px;padding:6px;background:#eee5fa;border-radius:13px}.tab-btn{flex:1;background:transparent;color:#6c568d}.tab-btn.active{background:#fff;color:#6d28d9;box-shadow:0 2px 8px #4c1d9514}.tab-pane[hidden]{display:none}.balance-card{padding:16px}.balance-card label{display:block;font-size:.88rem;color:var(--muted);margin-bottom:6px}.balance-card input{width:100%;border:1px solid #d8c8ed;border-radius:10px;padding:12px;font:inherit;color:var(--ink);background:#fff}.balance-result{margin-top:14px;padding:16px;border-radius:12px;background:var(--lilac-soft)}.balance-result small{color:#6c568d;display:block}.balance-result strong{font-size:1.55rem;display:block;margin-top:4px}.balance-result .negative{color:#b42342}.balance-result .positive{color:#6d28d9}.tile{padding:15px}.tile small{display:block;color:var(--muted);margin-bottom:5px}.amount{font-size:1.35rem;font-weight:750;font-variant-numeric:tabular-nums}
+.summary{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:16px}.tile,.panel{background:white;border:1px solid var(--line);border-radius:15px}.tabs{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 16px;padding:6px;background:#eee5fa;border-radius:13px;max-width:100%;min-width:0}.tab-btn{flex:1 1 120px;min-width:0;white-space:normal;overflow-wrap:anywhere;background:transparent;color:#6c568d;padding:10px 8px;font-size:.95rem}.tab-btn.active{background:#fff;color:#6d28d9;box-shadow:0 2px 8px #4c1d9514}.tab-pane[hidden]{display:none}.balance-card{padding:16px}.balance-card label{display:block;font-size:.88rem;color:var(--muted);margin-bottom:6px}.balance-card input{width:100%;border:1px solid #d8c8ed;border-radius:10px;padding:12px;font:inherit;color:var(--ink);background:#fff}.balance-result{margin-top:14px;padding:16px;border-radius:12px;background:var(--lilac-soft)}.balance-result small{color:#6c568d;display:block}.balance-result strong{font-size:1.55rem;display:block;margin-top:4px}.balance-result .negative{color:#b42342}.balance-result .positive{color:#6d28d9}.tile{padding:15px}.tile small{display:block;color:var(--muted);margin-bottom:5px}.amount{font-size:1.35rem;font-weight:750;font-variant-numeric:tabular-nums}
 .panel{overflow:hidden;margin-bottom:14px}.head{padding:15px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}.head h2{margin:0;font-size:1.05rem}.collapse-toggle{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;background:transparent;color:var(--ink);padding:0;text-align:left}.collapse-toggle .arrow{transition:transform .2s ease}.collapse-toggle[aria-expanded="true"] .arrow{transform:rotate(180deg)}.collapsed-content[hidden]{display:none}.list{padding:0 16px}.item{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;padding:14px 0;border-bottom:1px solid var(--line);align-items:center}.item:last-child{border-bottom:0}.name{font-weight:650}.details{font-size:.85rem;color:var(--muted);margin-top:3px}.right{text-align:right}.price{font-weight:700;white-space:nowrap}.paid{display:flex;align-items:center;justify-content:flex-end;gap:6px;color:var(--muted);font-size:.83rem;margin-top:5px}input[type=checkbox]{width:18px;height:18px;accent-color:var(--accent)}
 button{border:0;border-radius:9px;padding:10px 12px;font:inherit;font-weight:650;cursor:pointer}.primary{background:var(--accent);color:white}.secondary{background:#eef0f6;color:var(--ink)}.danger{background:#fff0f0;color:#9b2424}.actions{display:flex;gap:8px;flex-wrap:wrap}.edit-actions{display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap;margin-top:7px}.edit-actions button{font-size:.78rem;padding:6px 8px}
 .form{padding:15px;display:grid;grid-template-columns:1.5fr 1fr 1fr;gap:10px}.form label{display:block;font-size:.8rem;color:var(--muted);margin-bottom:4px}.form input,.form select{width:100%;min-width:0;border:1px solid #d8dce6;border-radius:9px;padding:10px;font:inherit;background:white;color:var(--ink)}.form button{grid-column:1/-1}.form .wide{grid-column:1/-1}.recurring{display:flex;align-items:center;gap:8px;font-size:.9rem;color:var(--ink)}.recurring input{width:18px;height:18px}
 .note{color:var(--muted);font-size:.82rem;margin:12px 2px}.empty{padding:20px 0;color:var(--muted)}
-@media(min-width:600px){.summary{grid-template-columns:repeat(4,minmax(0,1fr))}.amount{font-size:1.25rem}}@media(max-width:480px){main{padding:20px 11px 32px}.form{grid-template-columns:1fr 1fr}.form .wide{grid-column:1/-1}}
+@media(min-width:600px){.summary{grid-template-columns:repeat(4,minmax(0,1fr))}.amount{font-size:1.25rem}}@media(max-width:480px){main{width:100%;max-width:100%;padding:16px 10px 28px;overflow-wrap:anywhere}.form{grid-template-columns:1fr 1fr}.form .wide{grid-column:1/-1}.tabs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}.tab-btn{width:100%;font-size:.88rem;padding:10px 5px}.head{align-items:flex-start}.summary{grid-template-columns:repeat(2,minmax(0,1fr))}.balance-card{padding:12px}}
+
+.progress-track{width:100%;height:18px;border-radius:999px;overflow:hidden;background:#fee2e2;display:flex;margin:10px 0 8px}
+.progress-paid{height:100%;background:#16a34a;transition:width .2s}
+.progress-remaining{height:100%;background:#facc15;transition:width .2s}
+.progress-overdue{height:100%;background:#ef4444;transition:width .2s}
+.progress-legend{display:flex;gap:12px;flex-wrap:wrap;font-size:.85rem;color:var(--muted);margin-top:8px}
+.legend-dot{display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:4px}
+.cash-chart{display:flex;flex-direction:column;gap:10px;margin-top:14px}
+.cash-chart-row{display:grid;grid-template-columns:minmax(95px,1fr) 3fr auto;align-items:center;gap:8px;font-size:.88rem}
+.cash-chart-track{height:12px;border-radius:999px;background:#eee5fa;overflow:hidden}
+.cash-chart-fill{height:100%;border-radius:999px;background:#8b5cf6}
+@media(max-width:480px){.cash-chart-row{grid-template-columns:85px minmax(60px,1fr) auto;font-size:.8rem}}
+
 </style></head>
 <body><main>
 <h1>Controle financeiro</h1><p class="sub">Contas mensais, recorrências e parcelas em um só lugar.</p>
@@ -22,6 +35,7 @@ button{border:0;border-radius:9px;padding:10px 12px;font:inherit;font-weight:650
 <button class="tab-btn active" id="tabAccounts" role="tab" aria-selected="true">Contas</button>
 <button class="tab-btn" id="tabMoney" role="tab" aria-selected="false">Meu dinheiro</button>
 <button class="tab-btn" id="tabBalance" role="tab" aria-selected="false">Resumo</button>
+<button class="tab-btn" id="tabPlanning" role="tab" aria-selected="false">Planejamento</button>
 <button class="tab-btn" id="tabMariana" role="tab" aria-selected="false">Mariana — saldo devedor</button>
 </div>
 <div id="accountsPane" class="tab-pane">
@@ -74,6 +88,66 @@ button{border:0;border-radius:9px;padding:10px 12px;font:inherit;font-weight:650
 <div class="balance-result"><small id="balanceCaption">Saldo após descontar as contas</small><strong id="balanceResult">R$ 0,00</strong><span id="balanceMessage" class="details">Informe um valor para calcular.</span></div>
 </div></section>
 </div>
+
+<div id="planningPane" class="tab-pane" hidden>
+  <div class="head"><h2>Planejamento financeiro</h2><p class="details">Veja a divisão das despesas e simule quanto tempo levará para montar seu caixa.</p></div>
+  <div class="summary">
+    <div class="tile"><small>Despesas recorrentes</small><div class="amount" id="recurringTotal">R$ 0,00</div><small id="recurringCount">0 contas</small></div>
+    <div class="tile"><small>Despesas parceladas</small><div class="amount" id="installmentTotal">R$ 0,00</div><small id="installmentCount">0 contas</small></div>
+  </div>
+  <div class="panel balance-card" style="margin-bottom:14px">
+    <h3>Despesas por tipo</h3>
+    <p class="details">Estimativa do mês selecionado, considerando as contas cadastradas.</p>
+    <div style="display:flex;gap:14px;flex-wrap:wrap;margin:12px 0">
+      <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#8b5cf6"></span> Recorrentes</span>
+      <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#f59e0b"></span> Parceladas</span>
+      <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#94a3b8"></span> Avulsas/outras</span>
+    </div>
+    <div id="expenseChart" style="display:flex;height:24px;border-radius:999px;overflow:hidden;background:#eee5fa" aria-label="Gráfico de despesas por tipo"></div>
+    <div id="expenseChartLegend" class="details" style="margin-top:10px"></div>
+  </div>
+  <div class="panel balance-card" style="margin-bottom:14px">
+    <h3>Monte seu caixa</h3>
+    <p class="details">Digite a meta e quanto consegue guardar por mês. O simulador calcula o prazo estimado.</p>
+    <div class="form-grid">
+      <div><label for="cashGoal">Quanto quer juntar? (R$)</label><input id="cashGoal" inputmode="decimal" value="5000" placeholder="Ex.: 5000"></div>
+      <div><label for="cashCurrent">Quanto já tem guardado? (R$)</label><input id="cashCurrent" inputmode="decimal" value="0" placeholder="Ex.: 0"></div>
+      <div><label for="cashMonthly">Quanto consegue guardar por mês? (R$)</label><input id="cashMonthly" inputmode="decimal" value="300" placeholder="Ex.: 300"></div>
+      <div><label for="cashStart">Começar em</label><input id="cashStart" type="month" value="2026-11"></div>
+    </div>
+    <div class="balance-result">
+      <small>Tempo estimado para atingir a meta</small><strong id="cashDuration">17 meses</strong>
+      <small style="margin-top:12px">Data estimada para alcançar a meta</small><strong id="cashDate">Abril de 2028</strong>
+      <small style="margin-top:12px">Falta juntar</small><strong id="cashRemaining">R$ 5.000,00</strong>
+    </div>
+    <div style="margin-top:16px">
+      <h3 style="margin-bottom:6px">Progresso da meta</h3>
+      <div class="progress-track" role="img" aria-label="Progresso da meta de caixa">
+        <div id="cashSavedBar" class="progress-paid" style="width:0%"></div>
+        <div id="cashLeftBar" class="progress-remaining" style="width:100%"></div>
+      </div>
+      <div class="progress-legend">
+        <span><i class="legend-dot" style="background:#16a34a"></i>Já guardado: <strong id="cashSavedPercent">0%</strong></span>
+        <span><i class="legend-dot" style="background:#facc15"></i>Falta: <strong id="cashLeftPercent">100%</strong></span>
+      </div>
+      <h3 style="margin-top:18px">Crescimento estimado do caixa</h3>
+      <div id="cashGrowthChart" class="cash-chart"></div>
+      <p class="details">Projeção ilustrativa por etapas, sem considerar rendimentos ou juros.</p>
+    </div>
+    <p id="cashTip" class="details" style="margin-top:12px"></p>
+  </div>
+  <div class="panel balance-card">
+    <h3>Sugestão para formar sua reserva</h3>
+    <ul class="details">
+      <li>Defina uma meta inicial realista e aumente aos poucos.</li>
+      <li>Separe o valor assim que receber, em vez de guardar apenas o que sobrar.</li>
+      <li>Comece por uma reserva para imprevistos; mantenha esse dinheiro separado das despesas do mês.</li>
+      <li>Se não puder guardar o valor planejado em algum mês, ajuste o prazo sem abandonar a meta.</li>
+    </ul>
+    <p class="details">A simulação não considera rendimentos, juros ou mudanças nas despesas; é uma estimativa simples.</p>
+  </div>
+</div>
+
 <div id="marianaPane" class="tab-pane" hidden>
 <section class="panel">
   <div class="head"><h2>Mariana — saldo devedor</h2></div>
@@ -85,6 +159,20 @@ button{border:0;border-radius:9px;padding:10px 12px;font:inherit;font-weight:650
       <small>Total pago registrado</small><strong id="marianaPaidTotal">R$ 0,00</strong>
       <small style="margin-top:12px">Saldo devedor restante</small><strong id="marianaRemaining">R$ 25.306,88</strong>
       <span class="details" id="marianaPaymentsCount">0 pagamentos registrados</span>
+    </div>
+    <div style="margin-top:18px">
+      <h3 style="margin-bottom:6px">Evolução do saldo devedor</h3>
+      <div class="progress-track" role="img" aria-label="Progresso dos pagamentos da Mariana">
+        <div id="marianaPaidBar" class="progress-paid" style="width:0%"></div>
+        <div id="marianaRemainingBar" class="progress-remaining" style="width:100%"></div>
+        <div id="marianaOverdueBar" class="progress-overdue" style="width:0%"></div>
+      </div>
+      <div class="progress-legend">
+        <span><i class="legend-dot" style="background:#16a34a"></i>Abatido: <strong id="marianaPaidPercent">0%</strong></span>
+        <span><i class="legend-dot" style="background:#facc15"></i>Restante: <strong id="marianaRemainingPercent">100%</strong></span>
+        <span><i class="legend-dot" style="background:#ef4444"></i>Meta/total inicial</span>
+      </div>
+      <p class="details" id="marianaProgressText">0% do saldo inicial abatido.</p>
     </div>
   </div>
   <div class="head"><h2>Histórico de pagamentos</h2></div><div class="list" id="marianaHistory"></div>
@@ -203,6 +291,15 @@ function renderMarianaDebt(){
  document.getElementById("marianaPaidTotal").textContent=fmtMoney(totalPaid);
  document.getElementById("marianaRemaining").textContent=fmtMoney(Math.max(0,initial-totalPaid));
  document.getElementById("marianaPaymentsCount").textContent=months.length+" pagamento(s) de "+fmtMoney(amount);
+ const paid=Math.min(initial,totalPaid), remaining=Math.max(0,initial-totalPaid);
+ const paidPct=initial>0?Math.min(100,paid/initial*100):0;
+ const remainingPct=initial>0?Math.max(0,remaining/initial*100):0;
+ document.getElementById("marianaPaidBar").style.width=paidPct+"%";
+ document.getElementById("marianaRemainingBar").style.width=remainingPct+"%";
+ document.getElementById("marianaOverdueBar").style.width="0%";
+ document.getElementById("marianaPaidPercent").textContent=paidPct.toFixed(1).replace(".",",")+"%";
+ document.getElementById("marianaRemainingPercent").textContent=remainingPct.toFixed(1).replace(".",",")+"%";
+ document.getElementById("marianaProgressText").textContent=paidPct.toFixed(1).replace(".",",")+"% do saldo inicial abatido · "+fmtMoney(remaining)+" restante.";
  const history=document.getElementById("marianaHistory");history.innerHTML="";
  if(!months.length){const empty=document.createElement("div");empty.className="empty";empty.textContent="Nenhum pagamento registrado. Marque Mariana como paga na aba Contas para abater R$ 400,00 do saldo.";history.append(empty)}
  months.forEach(month=>{const row=document.createElement("div");row.className="item";const left=document.createElement("div"),name=document.createElement("div"),detail=document.createElement("div"),right=document.createElement("div"),price=document.createElement("div");name.className="name";name.textContent=ymLabel(month);detail.className="details";detail.textContent="Pagamento confirmado";left.append(name,detail);right.className="right";price.className="price";price.textContent="− "+fmtMoney(amount);right.append(price);row.append(left,right);history.append(row)});
@@ -220,9 +317,94 @@ function updateBalance(){
  else{caption.textContent="Valor que sobrará";message.textContent=balance===0?"O valor disponível cobre exatamente as contas.":"Depois de pagar as contas, sobrarão "+fmtMoney(balance)+"."}
 }
 amountInput.addEventListener("input",updateBalance);
+
+function parsePlanningMoney(raw){
+ if(!raw || !String(raw).trim()) return 0;
+ const normalized=String(raw).trim().replace(/\./g,"").replace(",",".");
+ const n=Number(normalized);
+ return Number.isFinite(n)&&n>=0?n:0;
+}
+function renderPlanning(){
+ const month=document.getElementById("month")?.value || "2026-11";
+ const bills=(data.bills||[]).filter(b=>{
+   const start=b.start||"0000-00", end=b.end||"9999-99";
+   return month>=start && month<=end;
+ });
+ const isInstallment=b=>Number(b.installments||b.quantity||0)>1 || /\b\d+\s*\/\s*\d+\b|parcela|parcelad/i.test((b.details||"")+" "+(b.name||""));
+ const recurring=bills.filter(b=>b.recurring && !isInstallment(b));
+ const installments=bills.filter(b=>isInstallment(b));
+ const other=bills.filter(b=>!b.recurring && !isInstallment(b));
+ const sum=arr=>arr.reduce((s,b)=>s+Number(b.value||0),0);
+ const r=sum(recurring), i=sum(installments), o=sum(other), total=r+i+o;
+ document.getElementById("recurringTotal").textContent=fmtMoney(r);
+ document.getElementById("installmentTotal").textContent=fmtMoney(i);
+ document.getElementById("recurringCount").textContent=recurring.length+" conta(s)";
+ document.getElementById("installmentCount").textContent=installments.length+" conta(s)";
+ const chart=document.getElementById("expenseChart");
+ chart.innerHTML="";
+ const legend=document.getElementById("expenseChartLegend");
+ const parts=[{label:"Recorrentes",value:r,color:"#8b5cf6"},{label:"Parceladas",value:i,color:"#f59e0b"},{label:"Avulsas/outras",value:o,color:"#94a3b8"}];
+ if(total<=0){chart.innerHTML='<div style="width:100%;display:flex;align-items:center;justify-content:center;color:#6c568d;font-size:12px">Sem despesas cadastradas neste mês</div>';legend.textContent="Adicione contas para visualizar a divisão."; }
+ else {
+   parts.forEach(p=>{if(p.value>0){const seg=document.createElement("div");seg.style.width=(p.value/total*100)+"%";seg.style.background=p.color;seg.title=p.label+": "+fmtMoney(p.value);chart.appendChild(seg)}});
+   legend.textContent=parts.filter(p=>p.value>0).map(p=>p.label+": "+fmtMoney(p.value)+" ("+(p.value/total*100).toFixed(1).replace(".",",")+"%)").join(" • ");
+ }
+ renderCashPlan();
+}
+function renderCashPlan(){
+ const goal=parsePlanningMoney(document.getElementById("cashGoal").value);
+ const current=parsePlanningMoney(document.getElementById("cashCurrent").value);
+ const monthly=parsePlanningMoney(document.getElementById("cashMonthly").value);
+ const start=document.getElementById("cashStart").value||"2026-11";
+ const remaining=Math.max(0,goal-current);
+ const months=remaining===0?0:(monthly>0?Math.ceil(remaining/monthly):null);
+ document.getElementById("cashRemaining").textContent=fmtMoney(remaining);
+ const savedPct=goal>0?Math.min(100,current/goal*100):100;
+ const leftPct=goal>0?Math.max(0,remaining/goal*100):0;
+ document.getElementById("cashSavedBar").style.width=savedPct+"%";
+ document.getElementById("cashLeftBar").style.width=leftPct+"%";
+ document.getElementById("cashSavedPercent").textContent=savedPct.toFixed(1).replace(".",",")+"%";
+ document.getElementById("cashLeftPercent").textContent=leftPct.toFixed(1).replace(".",",")+"%";
+ const chart=document.getElementById("cashGrowthChart"); chart.innerHTML="";
+ if(goal>0 && monthly>0){
+   const steps=Math.min(months===null?6:Math.max(1,months),6);
+   for(let k=1;k<=steps;k++){
+     const m=months===null?k:Math.max(1,Math.ceil(months*k/steps));
+     const amount=Math.min(goal,current+monthly*m);
+     const row=document.createElement("div");row.className="cash-chart-row";
+     const label=document.createElement("span");label.textContent="Mês "+m;
+     const track=document.createElement("div");track.className="cash-chart-track";
+     const fill=document.createElement("div");fill.className="cash-chart-fill";fill.style.width=(goal>0?Math.min(100,amount/goal*100):0)+"%";track.appendChild(fill);
+     const value=document.createElement("strong");value.textContent=fmtMoney(amount);
+     row.append(label,track,value);chart.appendChild(row);
+   }
+ }else{chart.textContent="Informe uma meta e um valor mensal para ver a projeção."}
+ document.getElementById("cashDuration").textContent=months===0?"Meta já alcançada":months===null?"Informe um valor mensal":" "+months+" mês(es)";
+ const dateEl=document.getElementById("cashDate");
+ if(months===null){dateEl.textContent="—"}
+ else if(months===0){dateEl.textContent="Agora"}
+ else{
+   const [y,m]=start.split("-").map(Number);
+   const date=new Date(y,m-1+months,1);
+   dateEl.textContent=date.toLocaleDateString("pt-BR",{month:"long",year:"numeric"});
+ }
+ const tip=document.getElementById("cashTip");
+ if(remaining===0)tip.textContent="Você já atingiu ou ultrapassou sua meta. Considere definir uma nova meta.";
+ else if(monthly<=0)tip.textContent="Digite quanto consegue guardar por mês para calcular o prazo.";
+ else {
+   const daily=monthly/30;
+   tip.textContent="Para guardar "+fmtMoney(monthly)+" por mês, reserve aproximadamente "+fmtMoney(daily)+" por dia. Se o valor ficar pesado, reduza a meta mensal e aceite um prazo maior.";
+ }
+}
+monthSel.addEventListener("change",renderPlanning);
+["cashGoal","cashCurrent","cashMonthly","cashStart"].forEach(id=>{
+ const el=document.getElementById(id);
+ if(el){el.addEventListener("input",renderCashPlan);el.addEventListener("change",renderCashPlan)}
+});
+
 function showTab(which){
- const panes={accounts:"accountsPane",money:"moneyPane",balance:"balancePane",mariana:"marianaPane"};
- const tabs={accounts:"tabAccounts",money:"tabMoney",balance:"tabBalance",mariana:"tabMariana"};
+ const panes={accounts:"accountsPane",money:"moneyPane",balance:"balancePane",planning:"planningPane",mariana:"marianaPane"};
+ const tabs={accounts:"tabAccounts",money:"tabMoney",balance:"tabBalance",planning:"tabPlanning",mariana:"tabMariana"};
  Object.keys(panes).forEach(k=>{
   document.getElementById(panes[k]).hidden=k!==which;
   document.getElementById(tabs[k]).classList.toggle("active",k===which);
@@ -230,11 +412,13 @@ function showTab(which){
  });
  if(which==="money")renderMoney();
  if(which==="balance")updateBalance();
+ if(which==="planning")renderPlanning();
  if(which==="mariana")renderMarianaDebt();
 }
 document.getElementById("tabAccounts").addEventListener("click",()=>showTab("accounts"));
 document.getElementById("tabMoney").addEventListener("click",()=>showTab("money"));
 document.getElementById("tabBalance").addEventListener("click",()=>showTab("balance"));
+document.getElementById("tabPlanning").addEventListener("click",()=>showTab("planning"));
 document.getElementById("tabMariana").addEventListener("click",()=>showTab("mariana"));
 monthSel.addEventListener("change",()=>{render();renderMoney()});
 document.getElementById("billMonth").addEventListener("change",()=>{
